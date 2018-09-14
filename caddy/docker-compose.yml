@@ -9,8 +9,7 @@ services:
   caddy:
     container_name: caddy
     image: drlogout/caddy:0.10.9
-    # remove -ca=https://acme-staging.api.letsencrypt.org/directory in production
-    command: -conf /etc/caddy/config/Caddyfile -log stdout -agree -ca=https://acme-staging.api.letsencrypt.org/directory
+    command: -conf /etc/caddy/config/Caddyfile -log stdout -agree
     ports:
       - 80:80
       - 443:443
