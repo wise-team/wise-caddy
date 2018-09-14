@@ -1,3 +1,29 @@
+test.wise.vote wise.vote {
+  tls noisy.pl@gmail.com
+
+  proxy /voting-page voting-page:8080 {
+    without /voting-page
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+
+  proxy / wise-manual:4000 {
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+ gzip
+  timeouts {
+    read 5mgit@github.com:drlogout/caddy-proxy.git
+    write 2m
+  }
+  log stdout
+  errors stderr
+}
+
 {{ define "timeouts" }}
   {{ if gt (len .) 0 }}
     {{ $first := index . 0 }}
