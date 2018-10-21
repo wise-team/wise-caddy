@@ -15,7 +15,7 @@ wise.vote {
     header_upstream X-Forwarded-For {remote}
     header_upstream X-Forwarded-Proto {scheme}
   }
- gzip
+  gzip
   timeouts {
     read 5m
     write 2m
@@ -23,6 +23,27 @@ wise.vote {
   log stdout
   errors stderr
 }
+
+utils.wise-team.io {
+  tls noisy.pl@gmail.com
+
+  proxy /accounts utils-accounts:8080 {
+    without /accounts
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+
+  gzip
+  timeouts {
+    read 5m
+    write 2m
+  }
+  log stdout
+  errors stderr
+}
+
 
 {{ define "timeouts" }}
   {{ if gt (len .) 0 }}
