@@ -1,6 +1,7 @@
 wise.vote {
   tls noisy.pl@gmail.com
 
+  #§ 'proxy /voting-page ' + data.config.votingPage.docker.services.frontend.container + ':' + data.config.votingPage.docker.services.frontend.port + ' {'
   proxy /voting-page voting-page:8080 {
     without /voting-page
     header_upstream Host {host}
@@ -8,7 +9,8 @@ wise.vote {
     header_upstream X-Forwarded-For {remote}
     header_upstream X-Forwarded-Proto {scheme}
   }
-
+  
+  #§ 'proxy / ' + data.config.manual.docker.services.frontend.container + ':' + data.config.manual.docker.services.frontend.port + ' {'
   proxy / wise-manual:4000 {
     header_upstream Host {host}
     header_upstream X-Real-IP {remote}
