@@ -27,7 +27,5 @@ services:
       - "../volumes/docker-gen/config:/etc/docker-gen/config:ro"
     volumes_from:
       - caddy
-    environment:
-      LETSENCRYPT_EMAIL: "noisy.pl@gmail.com"
     command: -config /etc/docker-gen/config/docker-gen.cfg
     restart: always
