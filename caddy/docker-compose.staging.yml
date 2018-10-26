@@ -11,6 +11,4 @@ services:
 
   caddy-gen:
     volumes:
-      - "../volumes/docker-gen/templates-production:/etc/docker-gen/templates:ro"
-    environment:
-      LETSENCRYPT_EMAIL: "noisy.pl@gmail.com"
+      - "../volumes/docker-gen/templates-staging:/etc/docker-gen/templates:ro"
