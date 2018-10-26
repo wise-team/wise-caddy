@@ -1,0 +1,14 @@
+version: "2"
+
+services:
+  caddy:
+    ports:
+      - 443:443
+    volumes:
+      - "../volumes/caddy/certs:/etc/caddy/certs"
+    environment:
+      - CADDYPATH=/etc/caddy/certs
+
+  caddy-gen:
+    environment:
+      LETSENCRYPT_EMAIL: "noisy.pl@gmail.com"
