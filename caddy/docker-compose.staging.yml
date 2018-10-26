@@ -1,6 +1,16 @@
 version: "2"
 
 services:
+  caddy:
+    ports:
+      - 443:443
+    volumes:
+      - "../volumes/caddy/certs:/etc/caddy/certs"
+    environment:
+      - CADDYPATH=/etc/caddy/certs
+
   caddy-gen:
     volumes:
-      - "../volumes/docker-gen/templates-staging:/etc/docker-gen/templates:ro"
+      - "../volumes/docker-gen/templates-production:/etc/docker-gen/templates:ro"
+    environment:
+      LETSENCRYPT_EMAIL: "noisy.pl@gmail.com"
