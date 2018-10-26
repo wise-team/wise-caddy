@@ -10,5 +10,7 @@ services:
       - CADDYPATH=/etc/caddy/certs
 
   caddy-gen:
+    volumes:
+      - "../volumes/docker-gen/templates-production:/etc/docker-gen/templates:ro"
     environment:
       LETSENCRYPT_EMAIL: "noisy.pl@gmail.com"

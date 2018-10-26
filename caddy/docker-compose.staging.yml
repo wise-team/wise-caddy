@@ -1,1 +1,6 @@
 version: "2"
+
+services:
+  caddy-gen:
+    volumes:
+      - "../volumes/docker-gen/templates-staging:/etc/docker-gen/templates:ro"

@@ -23,7 +23,6 @@ services:
     image: jwilder/docker-gen:0.7.3
     volumes:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
-      - "../volumes/docker-gen/templates:/etc/docker-gen/templates:ro"
       - "../volumes/docker-gen/config:/etc/docker-gen/config:ro"
     volumes_from:
       - caddy

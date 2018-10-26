@@ -1,0 +1,104 @@
+wise.vote {
+  tls off
+
+  #§ 'proxy /voting-page ' + data.config.votingPage.docker.services.frontend.container + ':' + data.config.votingPage.docker.services.frontend.port + ' {'
+  proxy /voting-page voting-page:8080 {
+    without /voting-page
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+  
+  #§ 'proxy / ' + data.config.manual.docker.services.frontend.container + ':' + data.config.manual.docker.services.frontend.port + ' {'
+  proxy / wise-manual:4000 {
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+  gzip
+  timeouts {
+    read 5m
+    write 2m
+  }
+  log stdout
+  errors stderr
+}
+
+utils.wise-team.io {
+  tls off
+
+  proxy /accounts utils-accounts:8080 {
+    without /accounts
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+ 
+  proxy / utils-accounts:8080 {
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+
+  gzip
+  timeouts {
+    read 5m
+    write 2m
+  }
+  log stdout
+  errors stderr
+}
+
+
+{{ define "timeouts" }}
+  {{ if gt (len .) 0 }}
+    {{ $first := index . 0 }}
+    {{ $parts := split $first "," }}
+    {{ if eq (len $parts) 1 }}
+  timeouts {{ index $parts 0 }}
+    {{ else }}
+  timeouts {
+        {{ range $index, $part := $parts }}
+    {{ trim $part }}
+        {{ end}}
+  }
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $hosts := groupByMulti $ "Env.VIRTUAL_HOST" " " }}
+
+{{ if not $hosts }}
+
+:80
+log stdout
+errors stderr
+
+{{ else }}
+
+{{ range $host, $containers := $hosts }}
+{{ $tlsEnv := closest (groupByKeys $containers "Env.CADDY_TLS") "off" }}
+{{ $tlsOff := eq $tlsEnv "off" }}
+
+{{ $addresses := split $host ","}}{{ range $address := $addresses }}http://{{ $address }} {{ end }}{
+  tls off
+
+  proxy /{{ range $index, $container := $containers }}{{ range $i, $network := $container.Networks }}{{ if eq $network.Name $container.Env.VIRTUAL_NETWORK }} {{ $network.IP }}:{{ $container.Env.VIRTUAL_PORT }}{{ end }}{{ end }}{{ end }} {
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+
+  gzip
+  {{ template "timeouts" groupByKeys $containers "Env.CADDY_TIMEOUTS" }}
+  log stdout
+  errors stderr
+}
+{{ end }}
+
+{{ end }}
