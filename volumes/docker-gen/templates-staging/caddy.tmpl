@@ -1,6 +1,6 @@
 #§ data.config.environments.staging.host + ' {'
 dev.wise.jblew.pl {
-  tls off
+  tls noisy.pl@gmail.com
 
   #§ 'proxy /voting-page ' + data.config.votingPage.docker.services.frontend.container + ':' + data.config.votingPage.docker.services.frontend.port + ' {'
   proxy /voting-page voting-page:8080 {
@@ -26,6 +26,34 @@ dev.wise.jblew.pl {
   log stdout
   errors stderr
 }
+
+utils.wise-team.io {
+  tls noisy.pl@gmail.com
+
+  proxy /accounts utils-accounts:8080 {
+    without /accounts
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+ 
+  proxy / utils-accounts:8080 {
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+
+  gzip
+  timeouts {
+    read 5m
+    write 2m
+  }
+  log stdout
+  errors stderr
+}
+
 
 {{ define "timeouts" }}
   {{ if gt (len .) 0 }}
@@ -57,8 +85,8 @@ errors stderr
 {{ $tlsEnv := closest (groupByKeys $containers "Env.CADDY_TLS") "off" }}
 {{ $tlsOff := eq $tlsEnv "off" }}
 
-{{ $addresses := split $host ","}}{{ range $address := $addresses }}http://{{ $address }} {{ end }}{
-  tls off
+{{ $addresses := split $host ","}}{{ range $address := $addresses }}{{ if $tlsOff }}http://{{end }}{{ $address }} {{ end }}{
+  tls {{ if $tlsOff }}off{{ else }}{{ $.Env.LETSENCRYPT_EMAIL }}{{ end }}
 
   proxy /{{ range $index, $container := $containers }}{{ range $i, $network := $container.Networks }}{{ if eq $network.Name $container.Env.VIRTUAL_NETWORK }} {{ $network.IP }}:{{ $container.Env.VIRTUAL_PORT }}{{ end }}{{ end }}{{ end }} {
     header_upstream Host {host}
