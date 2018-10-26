@@ -1,4 +1,5 @@
-wise.vote {
+#§ data.config.environments.staging.host + ' {'
+dev.wise.jblew.pl {
   tls off
 
   #§ 'proxy /voting-page ' + data.config.votingPage.docker.services.frontend.container + ':' + data.config.votingPage.docker.services.frontend.port + ' {'
@@ -25,34 +26,6 @@ wise.vote {
   log stdout
   errors stderr
 }
-
-utils.wise-team.io {
-  tls off
-
-  proxy /accounts utils-accounts:8080 {
-    without /accounts
-    header_upstream Host {host}
-    header_upstream X-Real-IP {remote}
-    header_upstream X-Forwarded-For {remote}
-    header_upstream X-Forwarded-Proto {scheme}
-  }
- 
-  proxy / utils-accounts:8080 {
-    header_upstream Host {host}
-    header_upstream X-Real-IP {remote}
-    header_upstream X-Forwarded-For {remote}
-    header_upstream X-Forwarded-Proto {scheme}
-  }
-
-  gzip
-  timeouts {
-    read 5m
-    write 2m
-  }
-  log stdout
-  errors stderr
-}
-
 
 {{ define "timeouts" }}
   {{ if gt (len .) 0 }}
