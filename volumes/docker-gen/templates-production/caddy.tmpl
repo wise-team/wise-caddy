@@ -10,14 +10,25 @@ wise.vote {
     header_upstream X-Forwarded-For {remote}
     header_upstream X-Forwarded-Proto {scheme}
   }
-  
-  #§ 'proxy / ' + data.config.manual.docker.services.frontend.container + ':' + data.config.manual.docker.services.frontend.port + ' {'
-  proxy / wise-manual:4000 {
+
+  #  §
+  proxy /documentation wise-manual:4000 {
+    without /documentation
     header_upstream Host {host}
     header_upstream X-Real-IP {remote}
     header_upstream X-Forwarded-For {remote}
     header_upstream X-Forwarded-Proto {scheme}
   }
+  
+  #  § 'proxy / ' + data.config.manual.docker.services.frontend.container + ':' + data.config.manual.docker.services.frontend.port + ' {'
+  proxy / wise-hub-serve:80 {
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+
+  
   gzip
   timeouts {
     read 5m
