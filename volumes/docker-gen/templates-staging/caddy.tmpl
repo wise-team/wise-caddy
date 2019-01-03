@@ -1,11 +1,11 @@
 #§ data.config.environments.staging.host + ' {'
-dev.wise.jblew.pl {
+dev.wise.vote {
   tls {
     max_certs 22
   }
 
-  #§ 'proxy /voting-page ' + data.config.votingPage.docker.services.frontend.container + ':' + data.config.votingPage.docker.services.frontend.port + ' {'
-  proxy /voting-page voting-page:8080 {
+  #§ 'proxy /voting-page ' + data.config.votingPage.docker.services.frontend.container + ':' + data.config.votingPage.port + ' {'
+  proxy /voting-page voting-page:8093 {
     without /voting-page
     header_upstream Host {host}
     header_upstream X-Real-IP {remote}
@@ -13,8 +13,8 @@ dev.wise.jblew.pl {
     header_upstream X-Forwarded-Proto {scheme}
   }
   
-  #§ 'proxy / ' + data.config.manual.docker.services.frontend.container + ':' + data.config.manual.docker.services.frontend.port + ' {'
-  proxy / wise-manual:4000 {
+  #§ 'proxy / ' + data.config.manual.docker.services.frontend.container + ':' + data.config.manual.port + ' {'
+  proxy / wise-manual:8096 {
     header_upstream Host {host}
     header_upstream X-Real-IP {remote}
     header_upstream X-Forwarded-For {remote}
